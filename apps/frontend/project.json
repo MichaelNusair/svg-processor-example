@@ -1,0 +1,25 @@
+{
+  "name": "frontend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/frontend/src",
+  "projectType": "application",
+  "tags": ["scope:frontend", "type:app"],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm vite",
+        "cwd": "apps/frontend"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm tsc && pnpm vite build",
+        "cwd": "apps/frontend"
+      },
+      "outputs": ["{projectRoot}/dist"]
+    }
+  }
+}
+
