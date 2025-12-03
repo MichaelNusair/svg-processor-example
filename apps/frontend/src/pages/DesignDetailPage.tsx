@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { RectangleItem } from '@svg-processor/shared-types';
+import type { RectangleItem, Design } from '@svg-processor/shared-types';
 import { useDesign, useCanvasRenderer } from '../hooks';
 import { LoadingPage, ErrorAlert, StatusBadge, IssueList } from '../components';
 import { formatDate, formatPercentage } from '../utils/format';
@@ -20,14 +20,14 @@ export function DesignDetailPage(): React.JSX.Element {
   const [selectedRect, setSelectedRect] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
-  const canvasConfig = design
+  // Type assertion: design is guaranteed to be non-null at this point
+  const designData = design as Design | null;
+
+  const canvasConfig = designData
     ? {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        svgWidth: design.svgWidth ?? 0,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        svgHeight: design.svgHeight ?? 0,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        items: design.items,
+        svgWidth: designData.svgWidth ?? 0,
+        svgHeight: designData.svgHeight ?? 0,
+        items: designData.items,
         selectedIndex: selectedRect,
       }
     : null;
@@ -37,29 +37,27 @@ export function DesignDetailPage(): React.JSX.Element {
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent<HTMLCanvasElement>) => {
-      if (!design || !canvasRef.current || !containerRef.current) return;
+      if (!designData || !canvasRef.current || !containerRef.current) return;
       const rect = canvasRef.current.getBoundingClientRect();
       const index = findRectAtPosition(
         e.clientX - rect.left,
         e.clientY - rect.top
       );
 
-      if (index !== null) {
+      if (index !== null && designData.items[index]) {
         const cr = containerRef.current.getBoundingClientRect();
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-        const rect = design.items[index];
+        const rectItem = designData.items[index];
         setTooltip({
           x: e.clientX - cr.left + 10,
           y: e.clientY - cr.top + 10,
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-          rect,
+          rect: rectItem,
           index,
         });
       } else {
         setTooltip(null);
       }
     },
-    [design, canvasRef, findRectAtPosition]
+    [designData, canvasRef, findRectAtPosition]
   );
 
   const handleClick = useCallback(
@@ -99,7 +97,12 @@ export function DesignDetailPage(): React.JSX.Element {
 
   return (
     <div>
-      <button className="back-btn" onClick={() => navigate('/designs')}>
+      <button
+        className="back-btn"
+        onClick={(): void => {
+          navigate('/designs');
+        }}
+      >
         ← Back to Designs
       </button>
 
@@ -111,8 +114,8 @@ export function DesignDetailPage(): React.JSX.Element {
           marginBottom: '2rem',
         }}
       >
-        <h1 style={{ flex: 1 }}>{design.originalFilename}</h1>
-        <StatusBadge status={design.status} />
+        <h1 style={{ flex: 1 }}>{designData.originalFilename}</h1>
+        <StatusBadge status={designData.status} />
       </div>
 
       <div className="page-grid two-col">
@@ -128,9 +131,8 @@ export function DesignDetailPage(): React.JSX.Element {
                 setTooltip(null);
               }}
               onClick={handleClick}
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
               style={{
-                cursor: design.items.length > 0 ? 'pointer' : 'default',
+                cursor: designData.items.length > 0 ? 'pointer' : 'default',
               }}
             />
             {tooltip && (
@@ -188,25 +190,23 @@ export function DesignDetailPage(): React.JSX.Element {
             <div className="metadata-item">
               <div className="metadata-label">SVG Dimensions</div>
               <div className="metadata-value">
-                {design.svgWidth} × {design.svgHeight}
+                {designData.svgWidth} × {designData.svgHeight}
               </div>
             </div>
             <div className="metadata-item">
               <div className="metadata-label">Rectangle Count</div>
-              <div className="metadata-value">{design.itemsCount}</div>
+              <div className="metadata-value">{designData.itemsCount}</div>
             </div>
             <div className="metadata-item">
               <div className="metadata-label">Coverage Ratio</div>
-              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
               <div className="metadata-value">
-                {formatPercentage(design.coverageRatio)}
+                {formatPercentage(designData.coverageRatio)}
               </div>
             </div>
             <div className="metadata-item">
               <div className="metadata-label">Created</div>
-              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-argument */}
               <div className="metadata-value" style={{ fontSize: '0.9rem' }}>
-                {formatDate(design.createdAt)}
+                {formatDate(designData.createdAt)}
               </div>
             </div>
           </div>
@@ -221,8 +221,8 @@ export function DesignDetailPage(): React.JSX.Element {
             >
               Issues
             </h3>
-            {design.issues.length > 0 ? (
-              <IssueList issues={design.issues} />
+            {designData.issues.length > 0 ? (
+              <IssueList issues={designData.issues} />
             ) : (
               <span style={{ color: 'var(--accent-success)' }}>
                 ✓ No issues detected
@@ -230,85 +230,78 @@ export function DesignDetailPage(): React.JSX.Element {
             )}
           </div>
 
-          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-          {selectedRect !== null && design.items[selectedRect] && (
-            <div className="card" style={{ marginTop: '1.5rem' }}>
-              <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>
-                Selected: Rectangle #{selectedRect + 1}
-              </h3>
-              <div
-                className="metadata-grid"
-                style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
-              >
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */}
-                <div className="metadata-item">
-                  <div className="metadata-label">X</div>
-                  <div className="metadata-value">
-                    {design.items[selectedRect].x}
+          {selectedRect !== null &&
+            selectedRect < designData.items.length &&
+            designData.items[selectedRect] && (
+              <div className="card" style={{ marginTop: '1.5rem' }}>
+                <h3 style={{ fontSize: '1rem', marginBottom: '1rem' }}>
+                  Selected: Rectangle #{selectedRect + 1}
+                </h3>
+                <div
+                  className="metadata-grid"
+                  style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}
+                >
+                  <div className="metadata-item">
+                    <div className="metadata-label">X</div>
+                    <div className="metadata-value">
+                      {designData.items[selectedRect].x}
+                    </div>
+                  </div>
+                  <div className="metadata-item">
+                    <div className="metadata-label">Y</div>
+                    <div className="metadata-value">
+                      {designData.items[selectedRect].y}
+                    </div>
+                  </div>
+                  <div className="metadata-item">
+                    <div className="metadata-label">Width</div>
+                    <div className="metadata-value">
+                      {designData.items[selectedRect].width}
+                    </div>
+                  </div>
+                  <div className="metadata-item">
+                    <div className="metadata-label">Height</div>
+                    <div className="metadata-value">
+                      {designData.items[selectedRect].height}
+                    </div>
                   </div>
                 </div>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */}
-                <div className="metadata-item">
-                  <div className="metadata-label">Y</div>
-                  <div className="metadata-value">
-                    {design.items[selectedRect].y}
-                  </div>
-                </div>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */}
-                <div className="metadata-item">
-                  <div className="metadata-label">Width</div>
-                  <div className="metadata-value">
-                    {design.items[selectedRect].width}
-                  </div>
-                </div>
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */}
-                <div className="metadata-item">
-                  <div className="metadata-label">Height</div>
-                  <div className="metadata-value">
-                    {design.items[selectedRect].height}
-                  </div>
-                </div>
-              </div>
-              <div
-                style={{
-                  marginTop: '1rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */}
                 <div
                   style={{
-                    width: 32,
-                    height: 32,
-                    backgroundColor: design.items[selectedRect].fill,
-                    borderRadius: 'var(--radius-sm)',
-                    border: '1px solid var(--border-default)',
+                    marginTop: '1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
                   }}
-                />
-                <div>
-                  <div className="metadata-label">Fill</div>
-                  {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-                  <div style={{ fontFamily: 'var(--font-mono)' }}>
-                    {design.items[selectedRect].fill}
+                >
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      backgroundColor: designData.items[selectedRect].fill,
+                      borderRadius: 'var(--radius-sm)',
+                      border: '1px solid var(--border-default)',
+                    }}
+                  />
+                  <div>
+                    <div className="metadata-label">Fill</div>
+                    <div style={{ fontFamily: 'var(--font-mono)' }}>
+                      {designData.items[selectedRect].fill}
+                    </div>
                   </div>
                 </div>
+                {designData.items[selectedRect].isOutOfBounds && (
+                  <div
+                    className="alert alert-error"
+                    style={{ marginTop: '1rem' }}
+                  >
+                    ⚠️ Out of bounds
+                  </div>
+                )}
               </div>
-              {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-              {design.items[selectedRect].isOutOfBounds && (
-                <div
-                  className="alert alert-error"
-                  style={{ marginTop: '1rem' }}
-                >
-                  ⚠️ Out of bounds
-                </div>
-              )}
-            </div>
-          )}
+            )}
 
-          {/* eslint-disable-next-line @typescript-eslint/no-unsafe-member-access */}
-          {design.items.length > 0 && (
+          {designData.items.length > 0 && (
             <div style={{ marginTop: '1.5rem' }}>
               <h3
                 style={{
@@ -326,8 +319,7 @@ export function DesignDetailPage(): React.JSX.Element {
                   gap: '0.5rem',
                 }}
               >
-                {/* eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */}
-                {design.items.map((rect, i) => (
+                {designData.items.map((rect, i) => (
                   <div
                     key={i}
                     className="card"

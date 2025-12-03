@@ -41,7 +41,7 @@ export function useFetch<T>(
 
   useEffect(() => {
     void execute();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- deps array is provided by caller, intentionally not including execute
   }, deps);
 
   return { ...state, refetch: execute };

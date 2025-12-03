@@ -16,7 +16,15 @@ export function DesignsPage(): React.JSX.Element {
   const { designs, isLoading, error, refetch } = useDesignList();
 
   if (isLoading) return <LoadingPage />;
-  if (error) return <ErrorAlert error={error} onRetry={refetch} />;
+  if (error)
+    return (
+      <ErrorAlert
+        error={error}
+        onRetry={(): void => {
+          void refetch();
+        }}
+      />
+    );
 
   return (
     <div>
@@ -60,37 +68,51 @@ export function DesignsPage(): React.JSX.Element {
               </tr>
             </thead>
             <tbody>
-              {designs.map((design) => (
-                <tr
-                  key={design._id}
-                  className="clickable-row"
-                  onClick={(): void => {
-                    navigate(`/designs/${design._id}`);
-                  }}
-                >
-                  <td>
-                    <span style={{ fontWeight: 500 }}>
-                      {design.originalFilename}
-                    </span>
-                  </td>
-                  <td>
-                    <StatusBadge status={design.status} />
-                  </td>
-                  <td>
-                    <span style={{ fontFamily: 'var(--font-mono)' }}>
-                      {design.itemsCount}
-                    </span>
-                  </td>
-                  <td>
-                    <IssueList issues={design.issues} />
-                  </td>
-                  <td>
-                    <span style={{ color: 'var(--text-secondary)' }}>
-                      {formatDate(design.createdAt)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
+              {designs.map((design) => {
+                // API response types are validated at runtime, safe to use here
+                const designIdRaw = design._id;
+                // Type conversion: design._id may be ObjectId or string, convert to string
+                const designId =
+                  typeof designIdRaw === 'string'
+                    ? designIdRaw
+                    : String(designIdRaw);
+                const originalFilename = design.originalFilename;
+                const status = design.status;
+                const itemsCount = design.itemsCount;
+                const issues = design.issues;
+                const createdAt = design.createdAt;
+                return (
+                  <tr
+                    key={designId}
+                    className="clickable-row"
+                    onClick={(): void => {
+                      navigate(`/designs/${designId}`);
+                    }}
+                  >
+                    <td>
+                      <span style={{ fontWeight: 500 }}>
+                        {originalFilename}
+                      </span>
+                    </td>
+                    <td>
+                      <StatusBadge status={status} />
+                    </td>
+                    <td>
+                      <span style={{ fontFamily: 'var(--font-mono)' }}>
+                        {itemsCount}
+                      </span>
+                    </td>
+                    <td>
+                      <IssueList issues={issues} />
+                    </td>
+                    <td>
+                      <span style={{ color: 'var(--text-secondary)' }}>
+                        {formatDate(createdAt)}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

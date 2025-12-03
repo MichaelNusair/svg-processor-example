@@ -50,11 +50,9 @@ function toListItemDTO(design: IDesign): DesignListItem {
 
 class DesignService {
   async create(file: multer.File): Promise<UploadDesignResponse> {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    // multer.File type definitions are incomplete, but these properties are guaranteed by multer
     const fileFilename: string = file.filename;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const fileOriginalname: string = file.originalname;
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
     const filePath: string = file.path;
     const data: CreateDesignData = {
       filename: fileFilename,

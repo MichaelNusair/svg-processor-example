@@ -23,8 +23,8 @@ export function useCanvasRenderer(config: CanvasConfig | null): {
   });
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    if (!config || !config.svgWidth || !config.svgHeight) return;
+    // Optional chaining is necessary: config can be null, and we need to check nested properties
+    if (!config?.svgWidth || !config?.svgHeight) return;
 
     const availW = CANVAS.WIDTH - 2 * CANVAS.PADDING;
     const availH = CANVAS.HEIGHT - 2 * CANVAS.PADDING;
@@ -32,12 +32,13 @@ export function useCanvasRenderer(config: CanvasConfig | null): {
     const scaledW = config.svgWidth * scale;
     const scaledH = config.svgHeight * scale;
 
+    // Intentionally only depend on dimensions, not full config object to avoid unnecessary recalculations
     setViewport({
       scale,
       offsetX: CANVAS.PADDING + (availW - scaledW) / 2,
       offsetY: CANVAS.PADDING + (availH - scaledH) / 2,
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only recalculate when dimensions change
   }, [config?.svgWidth, config?.svgHeight]);
 
   const render = useCallback(() => {

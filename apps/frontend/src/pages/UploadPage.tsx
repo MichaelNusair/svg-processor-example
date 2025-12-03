@@ -26,10 +26,12 @@ export function UploadPage(): React.JSX.Element {
     setMessage(null);
   }, []);
 
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = (e: DragEvent<HTMLDivElement>): void => {
     e.preventDefault();
     setIsDragOver(false);
-    handleFileSelect(e.dataTransfer.files[0] || null);
+    // files[0] can be undefined, need to handle null case for type safety
+    const file = e.dataTransfer.files[0] ?? null;
+    handleFileSelect(file);
   };
 
   const handleUpload = async (): Promise<void> => {
@@ -41,7 +43,9 @@ export function UploadPage(): React.JSX.Element {
           type: 'success',
           text: 'Upload successful! Redirecting...',
         });
-        setTimeout(() => navigate(`/designs/${result.id}`), 1000);
+        setTimeout((): void => {
+          navigate(`/designs/${result.id}`);
+        }, 1000);
       }
     } catch {
       // Error is handled by the error state

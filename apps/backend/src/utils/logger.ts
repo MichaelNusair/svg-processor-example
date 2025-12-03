@@ -37,6 +37,7 @@ class Logger {
     } else if (level === 'warn') {
       console.warn(output);
     } else {
+      // Logger utility - console.log is intentional for info/debug output
       // eslint-disable-next-line no-console
       console.log(output);
     }

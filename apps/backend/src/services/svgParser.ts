@@ -68,7 +68,7 @@ class SVGParserService {
   async parseContent(svgContent: string): Promise<ParsedSVGResult> {
     let result: ParsedSVG;
     try {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      // xml2js returns untyped object, validated and typed below
       const parsed = await parseStringPromise(svgContent, {
         explicitArray: false,
         mergeAttrs: false,
