@@ -8,6 +8,12 @@ Full-stack system for uploading, processing, and previewing SVG files with recta
 - **Frontend**: React, TypeScript, Vite
 - **Tooling**: Nx, pnpm workspaces
 
+## Prerequisites
+
+- **Node.js** v18+
+- **pnpm** (`npm install -g pnpm`)
+- **Docker** (for MongoDB)
+
 ## Quick Start
 
 ```bash
@@ -29,6 +35,27 @@ This starts MongoDB (via Docker) and both frontend/backend servers.
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:3001
+
+### Running MongoDB Manually
+
+If you prefer to run MongoDB separately:
+
+```bash
+docker run -p 27017:27017 mongo
+```
+
+### Using MongoDB Atlas (Cloud)
+
+Alternatively, use a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster:
+
+1. Create a free cluster at [mongodb.com/atlas](https://www.mongodb.com/atlas)
+2. Get your connection string (e.g., `mongodb+srv://user:pass@cluster.mongodb.net/svg-processor`)
+3. Set the environment variable:
+
+```bash
+export MONGODB_URI="mongodb+srv://user:pass@cluster.mongodb.net/svg-processor"
+pnpm start:fullapp  # Skip start:mongo since you're using Atlas
+```
 
 ## Project Structure
 
