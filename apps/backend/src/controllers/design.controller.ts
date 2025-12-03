@@ -1,13 +1,19 @@
-import type { Request, Response } from "express";
-import { designService } from "../services/design.service";
-import { asyncHandler } from "../middleware/asyncHandler";
-import { validateFileUpload, validateObjectId } from "../validators/design.validator";
-import { HttpStatus } from "../errors";
+import type { Request, Response } from 'express';
+import { designService } from '../services/design.service';
+import { asyncHandler } from '../middleware/asyncHandler';
+import {
+  validateFileUpload,
+  validateObjectId,
+} from '../validators/design.validator';
+import { HttpStatus, ValidationError } from '../errors';
 
 export const designController = {
   upload: asyncHandler(async (req: Request, res: Response) => {
     validateFileUpload(req);
-    const result = await designService.create(req.file!);
+    if (!req.file) {
+      throw new ValidationError('File is required');
+    }
+    const result = await designService.create(req.file);
     res.status(HttpStatus.CREATED).json(result);
   }),
 

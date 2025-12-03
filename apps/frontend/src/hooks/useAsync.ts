@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, type DependencyList } from 'react';
 
 export interface AsyncState<T> {
   data: T | null;
@@ -8,7 +8,7 @@ export interface AsyncState<T> {
 
 export function useAsync<T, Args extends unknown[] = []>(
   asyncFn: (...args: Args) => Promise<T>
-) {
+): AsyncState<T> & { execute: (...args: Args) => Promise<T | undefined> } {
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
     error: null,
@@ -35,12 +35,12 @@ export function useAsync<T, Args extends unknown[] = []>(
 
 export function useFetch<T>(
   asyncFn: () => Promise<T>,
-  deps: React.DependencyList = []
-) {
+  deps: DependencyList = []
+): AsyncState<T> & { refetch: () => Promise<T | undefined> } {
   const { execute, ...state } = useAsync(asyncFn);
 
   useEffect(() => {
-    execute();
+    void execute();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, deps);
 

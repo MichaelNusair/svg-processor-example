@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState, useRef } from "react";
-import type { RectangleItem } from "@svg-processor/shared-types";
-import { CANVAS } from "../constants";
+import React, { useCallback, useEffect, useState, useRef } from 'react';
+import type { RectangleItem } from '@svg-processor/shared-types';
+import { CANVAS } from '../constants';
 
 interface CanvasConfig {
   svgWidth: number;
@@ -9,7 +9,12 @@ interface CanvasConfig {
   selectedIndex: number | null;
 }
 
-export function useCanvasRenderer(config: CanvasConfig | null) {
+export function useCanvasRenderer(config: CanvasConfig | null): {
+  canvasRef: React.RefObject<HTMLCanvasElement>;
+  findRectAtPosition: (canvasX: number, canvasY: number) => number | null;
+  width: number;
+  height: number;
+} {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [viewport, setViewport] = useState({
     scale: 1,
@@ -18,7 +23,8 @@ export function useCanvasRenderer(config: CanvasConfig | null) {
   });
 
   useEffect(() => {
-    if (!config?.svgWidth || !config?.svgHeight) return;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    if (!config || !config.svgWidth || !config.svgHeight) return;
 
     const availW = CANVAS.WIDTH - 2 * CANVAS.PADDING;
     const availH = CANVAS.HEIGHT - 2 * CANVAS.PADDING;
@@ -31,13 +37,14 @@ export function useCanvasRenderer(config: CanvasConfig | null) {
       offsetX: CANVAS.PADDING + (availW - scaledW) / 2,
       offsetY: CANVAS.PADDING + (availH - scaledH) / 2,
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config?.svgWidth, config?.svgHeight]);
 
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !config) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const { scale, offsetX, offsetY } = viewport;
@@ -68,14 +75,14 @@ export function useCanvasRenderer(config: CanvasConfig | null) {
 
       const isSelected = config.selectedIndex === i;
       if (isSelected) {
-        ctx.strokeStyle = "#ffffff";
+        ctx.strokeStyle = '#ffffff';
         ctx.lineWidth = 3;
       } else if (rect.isOutOfBounds) {
-        ctx.strokeStyle = "#f85149";
+        ctx.strokeStyle = '#f85149';
         ctx.lineWidth = 2;
         ctx.setLineDash([4, 4]);
       } else {
-        ctx.strokeStyle = "rgba(255,255,255,0.3)";
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
         ctx.lineWidth = 1;
       }
 

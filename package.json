@@ -7,6 +7,7 @@
     "dev:backend": "nx serve backend",
     "build": "nx run-many -t build",
     "lint": "nx run-many -t lint",
+    "lint:fix": "nx run-many -t lint:fix",
     "test": "nx run-many -t test",
     "start:fullapp": "nx run-many -t serve",
     "start:mongo": "docker run -p 27017:27017 mongo",

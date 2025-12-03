@@ -1,11 +1,20 @@
-import type { Design, DesignListItem, UploadDesignResponse } from "@svg-processor/shared-types";
-import { designRepository, CreateDesignData, UpdateDesignData } from "../repositories/design.repository";
-import { svgParserService } from "./svgParser";
-import { fileService } from "./file.service";
-import { createLogger } from "../utils/logger";
-import type { IDesign } from "../models/Design";
+import type {
+  Design,
+  DesignListItem,
+  UploadDesignResponse,
+} from '@svg-processor/shared-types';
+import type multer from 'multer';
+import {
+  designRepository,
+  CreateDesignData,
+  UpdateDesignData,
+} from '../repositories/design.repository';
+import { svgParserService } from './svgParser';
+import { fileService } from './file.service';
+import { createLogger } from '../utils/logger';
+import type { IDesign } from '../models/Design';
 
-const logger = createLogger("DesignService");
+const logger = createLogger('DesignService');
 
 function toDesignDTO(design: IDesign): Design {
   return {
@@ -40,34 +49,43 @@ function toListItemDTO(design: IDesign): DesignListItem {
 }
 
 class DesignService {
-  async create(file: Express.Multer.File): Promise<UploadDesignResponse> {
+  async create(file: multer.File): Promise<UploadDesignResponse> {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const fileFilename: string = file.filename;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const fileOriginalname: string = file.originalname;
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+    const filePath: string = file.path;
     const data: CreateDesignData = {
-      filename: file.filename,
-      originalFilename: file.originalname,
-      filePath: file.path,
-      status: "processing",
+      filename: fileFilename,
+      originalFilename: fileOriginalname,
+      filePath,
+      status: 'processing',
     };
 
     const design = await designRepository.create(data);
     const designId = design._id.toString();
 
-    this.processAsync(designId, file.path);
+    void this.processAsync(designId, filePath);
 
     return {
       id: designId,
       filename: design.originalFilename,
       status: design.status,
       createdAt: design.createdAt.toISOString(),
-      message: "File uploaded successfully. Processing started.",
+      message: 'File uploaded successfully. Processing started.',
     };
   }
 
-  private async processAsync(designId: string, filePath: string): Promise<void> {
+  private async processAsync(
+    designId: string,
+    filePath: string
+  ): Promise<void> {
     try {
       const parsed = await svgParserService.parseFile(filePath);
 
       const updateData: UpdateDesignData = {
-        status: "completed",
+        status: 'completed',
         svgWidth: parsed.svgWidth,
         svgHeight: parsed.svgHeight,
         items: [...parsed.items],
@@ -77,12 +95,12 @@ class DesignService {
       };
 
       await designRepository.update(designId, updateData);
-      logger.info("Design processed", { designId });
+      logger.info('Design processed', { designId });
     } catch (error) {
-      logger.error("Processing failed", error as Error, { designId });
+      logger.error('Processing failed', error as Error, { designId });
       await designRepository.update(designId, {
-        status: "error",
-        errorMessage: error instanceof Error ? error.message : "Unknown error",
+        status: 'error',
+        errorMessage: error instanceof Error ? error.message : 'Unknown error',
       });
     }
   }

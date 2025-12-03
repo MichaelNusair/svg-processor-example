@@ -1,27 +1,31 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { LoadingSpinner } from "./LoadingSpinner";
+import React, { type ButtonHTMLAttributes, type ReactNode } from 'react';
+import { LoadingSpinner } from './LoadingSpinner';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary";
+  variant?: 'primary' | 'secondary';
   isLoading?: boolean;
   loadingText?: string;
   children: ReactNode;
 }
 
 export function Button({
-  variant = "primary",
+  variant = 'primary',
   isLoading,
   loadingText,
   children,
   disabled,
   ...props
-}: ButtonProps) {
+}: ButtonProps): React.JSX.Element {
   return (
-    <button className={`btn btn-${variant}`} disabled={disabled || isLoading} {...props}>
+    <button
+      className={`btn btn-${variant}`}
+      disabled={disabled ?? isLoading}
+      {...props}
+    >
       {isLoading ? (
         <>
           <LoadingSpinner />
-          {loadingText || "Loading..."}
+          {loadingText ?? 'Loading...'}
         </>
       ) : (
         children
