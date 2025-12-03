@@ -1,26 +1,28 @@
 import { useCallback } from 'react';
 import { getDesigns, getDesign, uploadSVG } from '../api';
 import { useAsync, useFetch } from './useAsync';
+import type { Design, DesignListItem } from '@svg-processor/shared-types';
+import type { AsyncState } from './useAsync';
 
-export function useDesignList(): ReturnType<
-  typeof useFetch<ReturnType<typeof getDesigns>>
-> & { designs: ReturnType<typeof getDesigns> } {
+export function useDesignList(): AsyncState<DesignListItem[]> & {
+  designs: DesignListItem[];
+  refetch: () => Promise<DesignListItem[] | undefined>;
+} {
   const result = useFetch(getDesigns, []);
   return { designs: result.data ?? [], ...result };
 }
 
-export function useDesign(
-  id: string | undefined
-): ReturnType<typeof useFetch<ReturnType<typeof getDesign>>> & {
-  design: ReturnType<typeof getDesign> | undefined;
+export function useDesign(id: string | undefined): AsyncState<Design> & {
+  design: Design | null;
+  refetch: () => Promise<Design | undefined>;
 } {
-  const fetchDesign = useCallback(() => {
+  const fetchDesign = useCallback(async (): Promise<Design> => {
     if (!id) return Promise.reject(new Error('No ID'));
     return getDesign(id);
   }, [id]);
 
   const result = useFetch(fetchDesign, [id]);
-  return { design: result.data, ...result };
+  return { design: result.data ?? null, ...result };
 }
 
 export function useUploadDesign(): {

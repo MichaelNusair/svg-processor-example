@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import type { RectangleItem, Design } from '@svg-processor/shared-types';
+import type { RectangleItem } from '@svg-processor/shared-types';
 import { useDesign, useCanvasRenderer } from '../hooks';
 import { LoadingPage, ErrorAlert, StatusBadge, IssueList } from '../components';
 import { formatDate, formatPercentage } from '../utils/format';
@@ -20,8 +20,30 @@ export function DesignDetailPage(): React.JSX.Element {
   const [selectedRect, setSelectedRect] = useState<number | null>(null);
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
 
-  // Type assertion: design is guaranteed to be non-null at this point
-  const designData = design as Design | null;
+  if (isLoading) return <LoadingPage />;
+  if (error || !design) {
+    return (
+      <div>
+        <button
+          className="back-btn"
+          onClick={(): void => {
+            navigate('/designs');
+          }}
+        >
+          ← Back to Designs
+        </button>
+        <ErrorAlert
+          error={error ?? 'Design not found'}
+          onRetry={(): void => {
+            void refetch();
+          }}
+        />
+      </div>
+    );
+  }
+
+  // design is guaranteed to be non-null at this point due to check above
+  const designData = design;
 
   const canvasConfig = designData
     ? {
@@ -72,28 +94,6 @@ export function DesignDetailPage(): React.JSX.Element {
     },
     [canvasRef, findRectAtPosition, selectedRect]
   );
-
-  if (isLoading) return <LoadingPage />;
-  if (error || !design) {
-    return (
-      <div>
-        <button
-          className="back-btn"
-          onClick={(): void => {
-            navigate('/designs');
-          }}
-        >
-          ← Back to Designs
-        </button>
-        <ErrorAlert
-          error={error ?? 'Design not found'}
-          onRetry={(): void => {
-            void refetch();
-          }}
-        />
-      </div>
-    );
-  }
 
   return (
     <div>

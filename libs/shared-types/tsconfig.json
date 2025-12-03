@@ -8,8 +8,10 @@
     "skipLibCheck": true,
     "declaration": true,
     "declarationMap": true,
-    "composite": true
+    "composite": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
-

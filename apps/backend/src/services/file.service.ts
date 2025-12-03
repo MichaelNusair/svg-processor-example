@@ -39,16 +39,16 @@ class FileService {
 
     const fileFilter: multer.Options['fileFilter'] = (_req, file, cb) => {
       const ext = path.extname(file.originalname).toLowerCase();
-      if (
-        config.upload.allowedExtensions.includes(ext) ||
-        config.upload.allowedMimeTypes.includes(file.mimetype)
-      ) {
+      const allowedExts = config.upload.allowedExtensions as readonly string[];
+      const allowedMimes = config.upload.allowedMimeTypes as readonly string[];
+      if (allowedExts.includes(ext) || allowedMimes.includes(file.mimetype)) {
         cb(null, true);
       } else {
         const error = new FileUploadError(
           `Invalid file type. Allowed: ${config.upload.allowedExtensions.join(', ')}`
         );
-        cb(error, false);
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- multer fileFilter accepts Error | null
+        cb(error as unknown as null, false);
       }
     };
 

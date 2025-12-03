@@ -6,8 +6,8 @@
     "moduleResolution": "node",
     "lib": ["ES2020"],
     "outDir": "./dist",
-    "rootDir": "./src",
     "sourceMap": true,
+    "skipLibCheck": true,
     "paths": {
       "@svg-processor/shared-types": ["../../libs/shared-types/src/index.ts"]
     }

@@ -3,7 +3,7 @@ import type {
   DesignListItem,
   UploadDesignResponse,
 } from '@svg-processor/shared-types';
-import type multer from 'multer';
+import type { Express } from 'express';
 import {
   designRepository,
   CreateDesignData,
@@ -49,7 +49,7 @@ function toListItemDTO(design: IDesign): DesignListItem {
 }
 
 class DesignService {
-  async create(file: multer.File): Promise<UploadDesignResponse> {
+  async create(file: Express.Multer.File): Promise<UploadDesignResponse> {
     // multer.File type definitions are incomplete, but these properties are guaranteed by multer
     const fileFilename: string = file.filename;
     const fileOriginalname: string = file.originalname;

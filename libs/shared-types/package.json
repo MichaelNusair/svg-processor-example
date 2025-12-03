@@ -2,9 +2,10 @@
   "name": "@svg-processor/shared-types",
   "version": "1.0.0",
   "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
+    "build": "tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

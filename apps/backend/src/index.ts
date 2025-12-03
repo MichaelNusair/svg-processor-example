@@ -9,7 +9,7 @@ import { requestLogger } from './middleware/requestLogger';
 import { ensureMongoConnection } from './middleware/mongodbConnection';
 import { logger } from './utils/logger';
 
-const app = express();
+const app: express.Application = express();
 
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
@@ -25,7 +25,7 @@ app.get('/health', (_req, res) => {
 });
 
 // Ensure MongoDB connection before database operations
-app.use('/designs', () => ensureMongoConnection, designRoutes);
+app.use('/designs', ensureMongoConnection, designRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
