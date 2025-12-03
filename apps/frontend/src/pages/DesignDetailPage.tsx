@@ -85,7 +85,7 @@ export function DesignDetailPage(): React.JSX.Element {
           ← Back to Designs
         </button>
         <ErrorAlert
-          error={error ?? 'Design not found'}
+          error={error as string | Error | null}
           onRetry={(): void => {
             void refetch();
           }}

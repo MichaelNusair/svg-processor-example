@@ -34,5 +34,10 @@ export function useUploadDesign(): {
   const { execute, isLoading, error, data } = useAsync((file: File) =>
     uploadSVG(file)
   );
-  return { upload: execute, isUploading: isLoading, error, result: data };
+  return {
+    upload: execute,
+    isUploading: isLoading,
+    error: error as Error | null,
+    result: data as { id: string; message: string } | null,
+  };
 }

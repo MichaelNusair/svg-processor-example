@@ -19,7 +19,7 @@ export function DesignsPage(): React.JSX.Element {
   if (error)
     return (
       <ErrorAlert
-        error={error}
+        error={error as string | Error | null}
         onRetry={(): void => {
           void refetch();
         }}
