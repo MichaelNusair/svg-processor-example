@@ -25,7 +25,6 @@ app.get('/health', (_req, res) => {
 });
 
 // Ensure MongoDB connection before database operations
-// eslint-disable-next-line @typescript-eslint/no-misused-promises -- Express middleware can be async
 app.use('/designs', ensureMongoConnection, designRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);

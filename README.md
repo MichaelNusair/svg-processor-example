@@ -15,6 +15,16 @@ pnpm install
 pnpm start
 ```
 
+> **Tip:** For development, you may prefer running each service in its own terminal for better visibility:
+
+```bash
+pnpm start:mongo      # Start MongoDB (Docker)
+pnpm dev:backend      # Start backend server
+pnpm dev:frontend     # Start frontend server
+```
+
+Each will run in a separate terminal with its own output.
+
 This starts MongoDB (via Docker) and both frontend/backend servers.
 
 - Frontend: http://localhost:5173

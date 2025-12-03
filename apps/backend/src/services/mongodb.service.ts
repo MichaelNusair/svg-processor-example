@@ -20,16 +20,40 @@ class MongoDBService {
    */
   async ensureConnection(): Promise<void> {
     // Connection states: 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
-    const readyState: number = mongoose.connection.readyState;
+    let readyState: number = mongoose.connection.readyState;
 
     if (readyState === ConnectionState.CONNECTED) {
       // Already connected
       return;
     }
 
-    // If already connecting, wait for that connection attempt
+    // If already connecting via our service, wait for that connection attempt
     if (this.isConnecting && this.connectionPromise) {
       return this.connectionPromise;
+    }
+
+    // If mongoose is already connecting, wait for it with a simple polling approach
+    if (readyState === ConnectionState.CONNECTING) {
+      const startTime = Date.now();
+      const timeout = 10000; // 10 second timeout
+
+      while (Date.now() - startTime < timeout) {
+        readyState = mongoose.connection.readyState;
+        if (readyState === ConnectionState.CONNECTED) {
+          return;
+        }
+        if (readyState === ConnectionState.DISCONNECTED) {
+          break; // Connection failed, will try to reconnect below
+        }
+        // Wait 100ms before checking again
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+
+      // If still connecting after timeout, throw error
+      const finalState: number = mongoose.connection.readyState;
+      if (finalState === ConnectionState.CONNECTING) {
+        throw new Error('MongoDB connection timeout');
+      }
     }
 
     // Start new connection attempt

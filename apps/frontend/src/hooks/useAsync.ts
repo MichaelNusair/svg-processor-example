@@ -25,6 +25,7 @@ export function useAsync<T, Args extends unknown[] = []>(
   const isMountedRef = useRef(true);
 
   useEffect((): (() => void) => {
+    isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
     };
