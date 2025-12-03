@@ -1,8 +1,14 @@
-import { useState, useCallback, useEffect, type DependencyList } from 'react';
+import {
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  type DependencyList,
+} from 'react';
 
 export interface AsyncState<T> {
   data: T | null;
-  error: Error | null;
+  error: unknown;
   isLoading: boolean;
 }
 
@@ -15,16 +21,45 @@ export function useAsync<T, Args extends unknown[] = []>(
     isLoading: false,
   });
 
+  const requestIdRef = useRef(0);
+  const isMountedRef = useRef(true);
+
+  useEffect((): (() => void) => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const execute = useCallback(
     async (...args: Args): Promise<T | undefined> => {
-      setState({ data: null, error: null, isLoading: true });
+      const currentId = ++requestIdRef.current;
+
+      setState((prev) => ({
+        ...prev,
+        isLoading: true,
+        error: null,
+      }));
 
       try {
         const result = await asyncFn(...args);
-        setState({ data: result, error: null, isLoading: false });
+
+        if (isMountedRef.current && currentId === requestIdRef.current) {
+          setState({
+            data: result,
+            error: null,
+            isLoading: false,
+          });
+        }
+
         return result;
       } catch (error) {
-        setState({ data: null, error: error as Error, isLoading: false });
+        if (isMountedRef.current && currentId === requestIdRef.current) {
+          setState({
+            data: null,
+            error,
+            isLoading: false,
+          });
+        }
       }
     },
     [asyncFn]
@@ -39,7 +74,7 @@ export function useFetch<T>(
 ): AsyncState<T> & { refetch: () => Promise<T | undefined> } {
   const { execute, ...state } = useAsync(asyncFn);
 
-  useEffect(() => {
+  useEffect((): void => {
     void execute();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- deps array is provided by caller, intentionally not including execute
   }, deps);
