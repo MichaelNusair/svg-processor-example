@@ -8,6 +8,18 @@ Full-stack system for uploading, processing, and previewing SVG files with recta
 - **Frontend**: React, TypeScript, Vite
 - **Tooling**: Nx, pnpm workspaces
 
+## Quick Start
+
+```bash
+pnpm install
+pnpm start
+```
+
+This starts MongoDB (via Docker) and both frontend/backend servers.
+
+- Frontend: http://localhost:5173
+- Backend: http://localhost:3001
+
 ## Project Structure
 
 ```
@@ -36,26 +48,15 @@ Full-stack system for uploading, processing, and previewing SVG files with recta
 └── examples/             # Sample SVG files
 ```
 
-## Prerequisites
-
-- Node.js 18+
-- pnpm (`npm install -g pnpm`)
-- MongoDB
-
-## Setup
-
-```bash
-pnpm install
-```
-
 ## Development
 
 ```bash
-# Start backend (port 3001)
-nx serve backend
+# Start both servers
+nx run-many -t serve
 
-# Start frontend (port 5173)
-nx serve frontend
+# Or individually
+nx serve backend   # port 3001
+nx serve frontend  # port 5173
 ```
 
 ## Environment Variables
@@ -93,3 +94,9 @@ Supports simple SVGs with `<rect>` elements:
   <rect x="50" y="50" width="200" height="200" fill="#FF0000" />
 </svg>
 ```
+
+## Architecture Notes
+
+**File Storage**: Raw SVG files are stored on disk (per assignment requirements), while metadata lives in MongoDB. This works for single-server setups but isn't horizontally scalable—multiple instances would each have their own local files.
+
+**For production scale**: Replace local disk storage with S3 or similar object storage so all instances share the same files.
