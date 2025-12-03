@@ -4,8 +4,10 @@ import mongoose from 'mongoose';
 import { config } from './config';
 import { designRoutes } from './routes/designs';
 import { fileService } from './services/file.service';
+import { mongodbService } from './services/mongodb.service';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { requestLogger } from './middleware/requestLogger';
+import { ensureMongoConnection } from './middleware/mongodbConnection';
 import { logger } from './utils/logger';
 
 const app = express();
@@ -16,23 +18,22 @@ app.use(requestLogger);
 app.use('/uploads', express.static(config.upload.directory));
 
 app.get('/health', (_req, res) => {
-  const readyState: number = mongoose.connection.readyState;
-  const isConnected = readyState === 1;
+  const isConnected = mongodbService.isConnected();
   res.json({
     status: isConnected ? 'healthy' : 'degraded',
     timestamp: new Date().toISOString(),
   });
 });
 
-app.use('/designs', designRoutes);
+// Ensure MongoDB connection before database operations
+app.use('/designs', ensureMongoConnection, designRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
 async function bootstrap(): Promise<void> {
   try {
     await fileService.ensureUploadDirectory();
-    await mongoose.connect(config.mongodb.uri);
-    logger.info('Connected to MongoDB');
+    await mongodbService.initialize();
 
     app.listen(config.port, () => {
       logger.info(`Server running on http://localhost:${String(config.port)}`);
