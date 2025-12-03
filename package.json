@@ -1,0 +1,21 @@
+{
+  "name": "@svg-processor/monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "nx serve frontend",
+    "dev:backend": "nx serve backend",
+    "build": "nx run-many -t build",
+    "lint": "nx run-many -t lint",
+    "test": "nx run-many -t test",
+    "start:fullapp": "nx run-many -t serve",
+    "start:mongo": "docker run -p 27017:27017 mongo",
+    "start:all": "npm run start:mongo & npm run start:fullapp",
+    "start":"pnpm start:all"
+  },
+  "devDependencies": {
+    "nx": "^20.0.0",
+    "typescript": "^5.3.3"
+  }
+}
+
