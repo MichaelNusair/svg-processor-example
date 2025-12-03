@@ -1,6 +1,5 @@
 import express from 'express';
 import cors from 'cors';
-import mongoose from 'mongoose';
 import { config } from './config';
 import { designRoutes } from './routes/designs';
 import { fileService } from './services/file.service';
@@ -26,7 +25,7 @@ app.get('/health', (_req, res) => {
 });
 
 // Ensure MongoDB connection before database operations
-app.use('/designs', ensureMongoConnection, designRoutes);
+app.use('/designs', () => ensureMongoConnection, designRoutes);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
