@@ -11,11 +11,19 @@
     "start:fullapp": "nx run-many -t serve",
     "start:mongo": "docker run -p 27017:27017 mongo",
     "start:all": "npm run start:mongo & npm run start:fullapp",
-    "start":"pnpm start:all"
+    "start": "pnpm start:all",
+    "prepare": "husky"
   },
   "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
     "nx": "^20.0.0",
+    "prettier": "^3.7.4",
     "typescript": "^5.3.3"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,css,scss,md,html,svg}": [
+      "prettier --write"
+    ]
   }
 }
-
