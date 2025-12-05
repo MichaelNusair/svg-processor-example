@@ -33,4 +33,10 @@ export const designController = {
     await designService.delete(req.params.id);
     res.status(HttpStatus.NO_CONTENT).send();
   }),
+
+  reprocess: asyncHandler(async (req: Request, res: Response) => {
+    validateObjectId(req.params.id);
+    await designService.reprocess(req.params.id);
+    res.json({ message: 'Reprocessing started' });
+  }),
 };

@@ -47,7 +47,6 @@ class FileService {
         const error = new FileUploadError(
           `Invalid file type. Allowed: ${config.upload.allowedExtensions.join(', ')}`
         );
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument -- multer fileFilter accepts Error | null
         cb(error as unknown as null, false);
       }
     };

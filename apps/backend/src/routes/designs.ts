@@ -9,5 +9,6 @@ router.get('/', designController.list);
 router.post('/', upload.single('file'), designController.upload);
 router.get('/:id', designController.getById);
 router.delete('/:id', designController.delete);
+router.post('/:id/reprocess', designController.reprocess);
 
 export { router as designRoutes };
