@@ -10,7 +10,16 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.{js,jsx,ts,tsx}'],
-    ignores: ['eslint.config.js', '*.config.js', 'vite.config.ts'],
+    ignores: [
+      'eslint.config.js',
+      '*.config.js',
+      'vite.config.ts',
+      'vitest.config.ts',
+      '**/*.test.ts',
+      '**/*.test.tsx',
+      '**/*.spec.ts',
+      '**/*.spec.tsx',
+    ],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
@@ -86,7 +95,12 @@ export default [
     },
   },
   {
-    files: ['eslint.config.js', '*.config.js', 'vite.config.ts'],
+    files: [
+      'eslint.config.js',
+      '*.config.js',
+      'vite.config.ts',
+      'vitest.config.ts',
+    ],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {

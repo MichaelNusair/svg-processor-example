@@ -21,7 +21,7 @@ export class ApiRequestError extends Error {
   constructor(
     message: string,
     statusCode: number,
-    errorType: string = 'Unknown',
+    errorType = 'Unknown',
     path?: string
   ) {
     super(message);
@@ -51,7 +51,7 @@ export class ApiRequestError extends Error {
   /**
    * Create from network/fetch error.
    */
-  static fromNetworkError(error: Error): ApiRequestError {
+  static fromNetworkError(): ApiRequestError {
     return new ApiRequestError(
       'Network error: Unable to connect to server. Please check your connection.',
       0,

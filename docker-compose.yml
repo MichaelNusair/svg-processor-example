@@ -14,8 +14,6 @@
 # Note: For development, you may prefer running frontend/backend
 # locally with hot reload while using Docker only for MongoDB.
 
-version: '3.8'
-
 services:
   # ==========================================================================
   # MongoDB Database

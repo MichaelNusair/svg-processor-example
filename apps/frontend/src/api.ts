@@ -35,9 +35,9 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
 
   try {
     response = await fetch(url, options);
-  } catch (error) {
+  } catch {
     // Network error (no connection, CORS, etc.)
-    throw ApiRequestError.fromNetworkError(error as Error);
+    throw ApiRequestError.fromNetworkError();
   }
 
   if (!response.ok) {
@@ -61,7 +61,7 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
       errorData !== null &&
       'message' in errorData
         ? String((errorData as { message: unknown }).message)
-        : `Request failed with status ${response.status}`;
+        : `Request failed with status ${String(response.status)}`;
 
     throw new ApiRequestError(
       message,

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { Multer } from 'multer';
+import type { Express } from 'express';
 
 // Must mock before importing the module under test
 vi.mock('../repositories/design.repository');
@@ -50,7 +50,7 @@ describe('DesignService', () => {
 
   describe('create', () => {
     it('should create a design record with processing status', async () => {
-      const mockFile: Multer.File = {
+      const mockFile: Express.Multer.File = {
         filename: 'uuid-test.svg',
         originalname: 'test.svg',
         path: '/uploads/uuid-test.svg',

@@ -5,7 +5,6 @@ import {
   isNotFoundError,
   isNetworkError,
   isServerError,
-  isApiRequestError,
 } from '../utils/errors';
 
 interface AlertProps {
@@ -33,7 +32,7 @@ interface ErrorAlertProps {
 export function ErrorAlert({
   error,
   onRetry,
-  showDetails = process.env.NODE_ENV === 'development',
+  showDetails = import.meta.env.DEV,
 }: ErrorAlertProps): React.JSX.Element | null {
   if (!error) return null;
 

@@ -36,7 +36,7 @@ describe('useAsync', () => {
       const { result } = renderHook(() => useAsync(asyncFn));
 
       // Start execution
-      let execPromise: Promise<string | undefined>;
+      let execPromise: Promise<unknown>;
       act(() => {
         execPromise = result.current.execute();
       });
@@ -115,13 +115,13 @@ describe('useAsync', () => {
       const { result } = renderHook(() => useAsync(asyncFn));
 
       // Start first request
-      let firstExec: Promise<string | undefined>;
+      let firstExec: Promise<unknown>;
       act(() => {
         firstExec = result.current.execute();
       });
 
       // Start second request before first completes
-      let secondExec: Promise<string | undefined>;
+      let secondExec: Promise<unknown>;
       act(() => {
         secondExec = result.current.execute();
       });
@@ -158,7 +158,7 @@ describe('useAsync', () => {
       const { result } = renderHook(() => useAsync(asyncFn));
 
       // Fire 5 rapid calls
-      const promises: Promise<string | undefined>[] = [];
+      const promises: Promise<unknown>[] = [];
       for (let i = 0; i < 5; i++) {
         await act(async () => {
           promises.push(result.current.execute());
@@ -189,7 +189,7 @@ describe('useAsync', () => {
       const { result, unmount } = renderHook(() => useAsync(asyncFn));
 
       // Start execution
-      let execPromise: Promise<string | undefined>;
+      let execPromise: Promise<unknown>;
       act(() => {
         execPromise = result.current.execute();
       });
@@ -252,7 +252,7 @@ describe('useFetch', () => {
     const asyncFn = vi.fn().mockResolvedValue('data');
     let dep = 1;
 
-    const { result, rerender } = renderHook(() => useFetch(asyncFn, [dep]));
+    const { rerender } = renderHook(() => useFetch(asyncFn, [dep]));
 
     await waitFor(() => {
       expect(asyncFn).toHaveBeenCalledTimes(1);

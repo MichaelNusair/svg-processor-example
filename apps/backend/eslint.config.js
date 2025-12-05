@@ -7,7 +7,7 @@ export default [
   js.configs.recommended,
   {
     files: ['**/*.{js,ts}'],
-    ignores: ['eslint.config.js', '*.config.js'],
+    ignores: ['eslint.config.js', '*.config.js', 'vitest.config.ts'],
     languageOptions: {
       parser: typescriptParser,
       parserOptions: {
