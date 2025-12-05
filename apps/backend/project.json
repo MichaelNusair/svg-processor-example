@@ -19,7 +19,20 @@
         "cwd": "apps/backend"
       },
       "outputs": ["{projectRoot}/dist"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm vitest run",
+        "cwd": "apps/backend"
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm eslint .",
+        "cwd": "apps/backend"
+      }
     }
   }
 }
-

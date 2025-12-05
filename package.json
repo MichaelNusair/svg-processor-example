@@ -9,10 +9,20 @@
     "lint": "nx run-many -t lint",
     "lint:fix": "nx run-many -t lint:fix",
     "test": "nx run-many -t test",
+    "test:coverage": "nx run-many -t test -- --coverage",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,scss,md,html,svg}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,css,scss,md,html,svg}\"",
     "start:fullapp": "nx run-many -t serve",
-    "start:mongo": "docker run -p 27017:27017 mongo",
-    "start:all": "npm run start:mongo & npm run start:fullapp",
+    "start:mongo": "docker-compose -f docker-compose.dev.yml up -d",
+    "stop:mongo": "docker-compose -f docker-compose.dev.yml down",
+    "start:all": "pnpm start:mongo && sleep 2 && pnpm start:fullapp",
     "start": "pnpm start:all",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:logs": "docker-compose logs -f",
+    "seed": "tsx scripts/seed.ts",
+    "seed:clear": "tsx scripts/seed.ts --clear",
+    "clean": "nx reset && rm -rf node_modules apps/*/node_modules libs/*/node_modules",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -20,6 +30,7 @@
     "lint-staged": "^16.2.7",
     "nx": "^20.0.0",
     "prettier": "^3.7.4",
+    "tsx": "^4.6.2",
     "typescript": "^5.3.3"
   },
   "lint-staged": {
