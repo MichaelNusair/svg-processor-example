@@ -12,6 +12,7 @@ import { svgParserService } from './svgParser';
 import { fileService } from './file.service';
 import { createLogger, metrics } from '../utils/logger';
 import type { IDesign } from '../models/Design';
+import type { Express } from 'express';
 
 const logger = createLogger('DesignService');
 
