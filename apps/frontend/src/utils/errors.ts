@@ -1,9 +1,5 @@
 import type { ApiError } from '@svg-processor/shared-types';
 
-// ============================================================================
-// Error Types
-// ============================================================================
-
 /**
  * Custom error class for API errors with additional context.
  * Preserves error details from the backend for better error handling.
@@ -83,10 +79,6 @@ export class ApiRequestError extends Error {
   }
 }
 
-// ============================================================================
-// Error Type Guards
-// ============================================================================
-
 /**
  * Check if an error is an ApiRequestError.
  */
@@ -121,10 +113,6 @@ export function isServerError(error: unknown): boolean {
 export function isNetworkError(error: unknown): boolean {
   return isApiRequestError(error) && error.isNetworkError;
 }
-
-// ============================================================================
-// Error Message Utilities
-// ============================================================================
 
 /**
  * Get a user-friendly error message from any error type.

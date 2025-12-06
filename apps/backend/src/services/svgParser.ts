@@ -10,10 +10,6 @@ import { createLogger, metrics } from '../utils/logger';
 
 const logger = createLogger('SVGParser');
 
-// ============================================================================
-// Configuration & Limits
-// ============================================================================
-
 /**
  * SVG Parser configuration for robustness and security.
  * These limits protect against malicious or malformed SVG files.
@@ -44,10 +40,6 @@ const PARSER_CONFIG = {
   parseTimeoutMs: 5000,
 } as const;
 
-// ============================================================================
-// Type Definitions
-// ============================================================================
-
 interface SVGAttributes {
   width?: string;
   height?: string;
@@ -69,10 +61,6 @@ interface ParsedSVG {
     rect?: { $?: RectAttributes }[] | { $?: RectAttributes };
   };
 }
-
-// ============================================================================
-// Helper Functions
-// ============================================================================
 
 function parseNumber(value: string | undefined, defaultValue: number): number {
   if (!value) return defaultValue;
@@ -125,10 +113,6 @@ function withTimeout<T>(
     }),
   ]);
 }
-
-// ============================================================================
-// SVG Parser Service
-// ============================================================================
 
 class SVGParserService {
   /**

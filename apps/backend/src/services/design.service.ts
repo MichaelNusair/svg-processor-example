@@ -3,7 +3,6 @@ import type {
   DesignListItem,
   UploadDesignResponse,
 } from '@svg-processor/shared-types';
-import type { Express } from 'express';
 import {
   designRepository,
   CreateDesignData,
@@ -15,10 +14,6 @@ import { createLogger, metrics } from '../utils/logger';
 import type { IDesign } from '../models/Design';
 
 const logger = createLogger('DesignService');
-
-// ============================================================================
-// Retry Configuration
-// ============================================================================
 
 const RETRY_CONFIG = {
   maxAttempts: 3,
@@ -44,10 +39,6 @@ function getRetryDelay(attempt: number): number {
   const jitter = Math.random() * 0.3 * baseDelay; // Add up to 30% jitter
   return Math.min(baseDelay + jitter, RETRY_CONFIG.maxDelayMs);
 }
-
-// ============================================================================
-// DTO Transformations
-// ============================================================================
 
 function toDesignDTO(design: IDesign): Design {
   return {
@@ -80,10 +71,6 @@ function toListItemDTO(design: IDesign): DesignListItem {
     createdAt: design.createdAt.toISOString(),
   };
 }
-
-// ============================================================================
-// Design Service
-// ============================================================================
 
 class DesignService {
   async create(file: Express.Multer.File): Promise<UploadDesignResponse> {

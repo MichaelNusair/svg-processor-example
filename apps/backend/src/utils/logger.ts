@@ -1,10 +1,6 @@
 import { config } from '../config';
 import { AsyncLocalStorage } from 'async_hooks';
 
-// ============================================================================
-// Correlation ID Management
-// ============================================================================
-
 /**
  * AsyncLocalStorage for request-scoped correlation IDs.
  * This allows us to track a request through the entire processing pipeline
@@ -36,10 +32,6 @@ export function getCorrelationId(): string | undefined {
 export function withCorrelationId<T>(correlationId: string, fn: () => T): T {
   return correlationStore.run({ correlationId }, fn);
 }
-
-// ============================================================================
-// Metrics Collection (In-Memory for Demo, Production: Prometheus/StatsD)
-// ============================================================================
 
 /**
  * Simple in-memory metrics collector.
@@ -152,10 +144,6 @@ class MetricsCollector {
 }
 
 export const metrics = new MetricsCollector();
-
-// ============================================================================
-// Structured Logger
-// ============================================================================
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error';
 

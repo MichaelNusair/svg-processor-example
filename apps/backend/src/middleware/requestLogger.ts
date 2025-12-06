@@ -22,10 +22,8 @@ export function requestLogger(
   const startTime = performance.now();
   const { method, originalUrl, query } = req;
 
-  // Normalize path for metrics (remove IDs to avoid cardinality explosion)
   const normalizedPath = normalizePath(originalUrl);
 
-  // Log request start
   logger.info('Request started', {
     method,
     path: originalUrl,
@@ -33,13 +31,11 @@ export function requestLogger(
     userAgent: req.get('user-agent'),
   });
 
-  // Capture response finish
   res.on('finish', () => {
     const duration = performance.now() - startTime;
     const { statusCode } = res;
     const statusCategory = getStatusCategory(statusCode);
 
-    // Log request completion
     logger.info('Request completed', {
       method,
       path: originalUrl,
@@ -47,8 +43,6 @@ export function requestLogger(
       durationMs: Math.round(duration * 100) / 100,
     });
 
-    // Record metrics
-    // Counter: Total requests
     metrics.increment('http_requests_total', 1, {
       method,
       path: normalizedPath,
@@ -56,7 +50,6 @@ export function requestLogger(
       status_category: statusCategory,
     });
 
-    // Histogram: Request duration
     metrics.histogram('http_request_duration_ms', duration, {
       method,
       path: normalizedPath,

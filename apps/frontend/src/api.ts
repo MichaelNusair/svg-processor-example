@@ -6,10 +6,6 @@ import type {
 import { API_BASE } from './constants';
 import { ApiRequestError } from './utils/errors';
 
-// ============================================================================
-// API Client with Typed Errors
-// ============================================================================
-
 /**
  * Check if a response body looks like our API error format.
  */
@@ -78,10 +74,6 @@ async function fetchApi<T>(url: string, options?: RequestInit): Promise<T> {
 
   return response.json() as Promise<T>;
 }
-
-// ============================================================================
-// API Endpoints
-// ============================================================================
 
 /**
  * Upload an SVG file for processing.

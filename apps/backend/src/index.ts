@@ -12,18 +12,14 @@ import { logger, metrics } from './utils/logger';
 
 const app: express.Application = express();
 
-// Core middleware
 app.use(cors({ origin: config.cors.origin }));
 app.use(express.json());
 
-// Correlation ID middleware - must be before request logger
 app.use(correlationIdMiddleware);
 app.use(requestLogger);
 
-// Static file serving for uploads
 app.use('/uploads', express.static(config.upload.directory));
 
-// Health check endpoint (no DB required)
 app.get('/health', (_req, res) => {
   const isConnected = mongodbService.isConnected();
   res.json({
@@ -46,10 +42,8 @@ app.get('/metrics', (_req, res) => {
   });
 });
 
-// API routes - ensure MongoDB connection before database operations
 app.use('/designs', ensureMongoConnection, designRoutes);
 
-// Error handling
 app.use(notFoundHandler);
 app.use(errorHandler);
 
